@@ -1,6 +1,7 @@
 __author__ = 'user-icc'
 
 import urllib2
+import json
 from bs4 import BeautifulSoup
 
 
@@ -27,18 +28,23 @@ class Google:
         soup = BeautifulSoup(self.web_response_html, 'html.parser')
         web_soup_body = soup.body
         web_search_links = [r.a.get("href").strip('/url?q=') for r in web_soup_body.find_all("h3")]
-        cleaned = [link[:link.index('&sa')] for link in web_search_links]
+        cleaned = {'web-'+str(index):link[:link.index('&sa')] for index,link in enumerate(web_search_links)}
         return cleaned
 
     def fetch_news_results(self):
         soup = BeautifulSoup(self.news_response_html, 'html.parser')
         news_soup_body = soup.body
         news_search_links = [r.a.get("href").strip('/url?q=') for r in news_soup_body.find_all("h3")]
-        cleaned = [link[:link.index('&sa')] for link in news_search_links]
-        return cleaned
+        cleaned = {'news-'+str(index):link[:link.index('&sa')] for index,link in enumerate(news_search_links)}
+        return json.dumps(cleaned)
+
+    def fetch_json_result(self):
+        # This function can also send the retrieved json data to server.
+        return json.dumps({"web":self.fetch_web_results(),"news":self.fetch_news_results()})
 
 if __name__ == '__main__':
     google = Google()
     google.query('hello+world')
-    print google.fetch_news_results()
-    print google.fetch_web_results()
+#    print google.fetch_web_results()
+#    print google.fetch_news_results()
+    print google.fetch_json_result()
