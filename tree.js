@@ -53,6 +53,16 @@ Ext.application({
                             'target="_blank">contributors<a>'
                     }
                 ),
+                new OpenLayers.Layer.WMS("NYC Roads",
+                    "http://localhost:8080/geoserver/nyc_roads/wms", {
+                        layers: "nyc_roads:nyc_roads",
+                        transparent: true,
+                        format: "image/png"
+                    }, {
+                        isBaseLayer: false,
+                        buffer: 0
+                    }
+                ),
                 new OpenLayers.Layer.WMS("Country Borders",
                     "http://ows.terrestris.de/geoserver/osm/wms", {
                         layers: "osm:osm-country-borders",
@@ -159,14 +169,21 @@ Ext.application({
                             ptype: 'gx_layercontainer',
                             store: mapPanel.layers
                         }],
-                        expanded: true
-                    }, {
+                        expanded: true,
+                        text: "District-1"
+                    },
+                    {
+                        plugins: [{
+                            ptype: 'gx_layercontainer',
+                            store: mapPanel.layers
+                        }],
+                        expanded: true,
+                        text: "District-2"
+                    },
+                     {
                         plugins: ['gx_baselayercontainer'],
                         expanded: true,
                         text: "Base Maps"
-                    }, {
-                        plugins: ['gx_overlaylayercontainer'],
-                        expanded: true
                     }
                 ]
             }
@@ -186,19 +203,7 @@ Ext.application({
             autoScroll: true,
             store: store,
             rootVisible: false,
-            lines: false,
-            tbar: [{
-                text: "remove",
-                handler: function() {
-                    layer = mapPanel.map.layers[2];
-                    mapPanel.map.removeLayer(layer);
-                }
-            }, {
-                text: "add",
-                handler: function() {
-                    mapPanel.map.addLayer(layer);
-                }
-            }]
+            lines: false
         });
 
         Ext.create('Ext.Viewport', {
